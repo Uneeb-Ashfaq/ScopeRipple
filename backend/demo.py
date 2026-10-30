@@ -1,7 +1,8 @@
 
 from app.core.graph import PermissionGraph
-from app.core.traversal import bfs
+from app.core.traversal import bfs, dfs, shortest_path
 graph = PermissionGraph()
+
 
 # Create nodes
 graph.add_node("agent")
@@ -24,3 +25,16 @@ print(graph.get_neighbors("agent"))
 # Find all nodes reachable from the agent
 print("\nBFS Traversal:")
 print(bfs(graph, "agent"))
+
+
+# Display DFS traversal
+print("\nDFS Traversal:")
+print(dfs(graph, "agent"))
+
+# Find the access path to the private database
+print("\nShortest Path to Private DB:")
+print(shortest_path(graph, "agent", "private_db"))
+
+# Check a path that does not exist
+print("\nPath from Public Files to Private DB:")
+print(shortest_path(graph, "public_files", "private_db"))
