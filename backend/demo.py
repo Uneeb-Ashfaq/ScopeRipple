@@ -1,6 +1,6 @@
 
 from app.core.graph import PermissionGraph
-
+from app.core.traversal import bfs
 graph = PermissionGraph()
 
 # Create nodes
@@ -21,3 +21,6 @@ print(graph.graph)
 
 print("\nAgent's direct connections:")
 print(graph.get_neighbors("agent"))
+# Find all nodes reachable from the agent
+print("\nBFS Traversal:")
+print(bfs(graph, "agent"))
