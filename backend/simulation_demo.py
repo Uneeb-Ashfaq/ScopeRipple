@@ -1,7 +1,7 @@
 
 from app.core.graph import PermissionGraph
 from app.core.simulator import simulate_permission_change
-
+from app.core.risk_analyzer import analyze_simulation
 
 # Create the original permission graph
 graph = PermissionGraph()
@@ -30,3 +30,14 @@ print(result)
 # Check that the original graph was not modified
 print("\nOriginal database permissions:")
 print(graph.get_permissions("db_tool", "private_db"))
+# Analyze security risks introduced by the simulation
+findings = analyze_simulation(result)
+
+print("\nSecurity Findings:")
+
+for finding in findings:
+    print(f"Resource: {finding['resource']}")
+    print(f"Action: {finding['action']}")
+    print(f"Severity: {finding['severity']}")
+    print(f"Reason: {finding['reason']}")
+    print(f"Path: {' -> '.join(finding['path'])}")
