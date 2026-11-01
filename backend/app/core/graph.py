@@ -74,3 +74,26 @@ class PermissionGraph:
             raise ValueError(f"Unknown node: {node_id}")
 
         return self.nodes[node_id].copy()
+
+
+    # Remove a specific permission from an edge
+    def remove_permission(self, source, target, action):
+        edge = (source, target)
+
+        if edge not in self.permissions:
+            raise ValueError("Permission edge does not exist")
+
+        if action not in self.permissions[edge]:
+            raise ValueError("Permission action does not exist")
+
+        self.permissions[edge].remove(action)
+
+        if not self.permissions[edge]:
+            del self.permissions[edge]
+            self.graph[source].remove(target)
+
+    # Create an independent copy of the graph
+    def clone(self):
+        from copy import deepcopy
+
+        return deepcopy(self)
