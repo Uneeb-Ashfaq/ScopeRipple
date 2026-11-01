@@ -76,3 +76,53 @@ def shortest_path(graph, start, target):
                 queue.append(neighbor)
 
     return None
+
+
+
+# Find resources accessible through valid permission paths
+def reachable_resources(graph, agent_id, action="read"):
+
+    if agent_id not in graph.nodes:
+        raise ValueError(f"Unknown agent: {agent_id}")
+
+    if graph.nodes[agent_id]["type"] != "agent":
+        raise ValueError("Start node must be an agent")
+
+    if action not in {"read", "write"}:
+        raise ValueError(f"Invalid resource action: {action}")
+
+    visited = {agent_id}
+    queue = deque([agent_id])
+    resources = []
+
+    while queue:
+        current = queue.popleft()
+
+        for neighbor in graph.get_neighbors(current):
+
+            if graph.nodes[neighbor]["type"] == "tool":
+                required_action = "execute"
+
+            elif graph.nodes[neighbor]["type"] == "resource":
+                required_action = action
+
+            else:
+                continue
+
+            if not graph.has_permission(
+                current, neighbor, required_action
+            ):
+                continue
+
+            if neighbor in visited:
+                continue
+
+            visited.add(neighbor)
+
+            if graph.nodes[neighbor]["type"] == "resource":
+                resources.append(neighbor)
+
+            else:
+                queue.append(neighbor)
+
+    return resources
