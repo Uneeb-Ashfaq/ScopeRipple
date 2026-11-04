@@ -103,9 +103,7 @@ def simulate_permission_change(graph, agent_id, source, target, action, operatio
                 "resource": resource,
                 "action": resource_action,
                 "sensitivity": modified.nodes[resource]["sensitivity"],
-                "path": find_access_path(
-                    modified, agent_id, resource, resource_action
-                )
+                "path": find_access_path(modified, agent_id, resource, resource_action)
             })
 
         for resource in sorted(before - after):
@@ -113,9 +111,67 @@ def simulate_permission_change(graph, agent_id, source, target, action, operatio
                 "resource": resource,
                 "action": resource_action,
                 "sensitivity": graph.nodes[resource]["sensitivity"],
-                "path": find_access_path(
-                    graph, agent_id, resource, resource_action
-                )
+                "path": find_access_path(graph, agent_id, resource, resource_action)
+            })
+
+    return results
+
+
+
+# Simulate multiple permission changes without modifying the original graph
+def simulate_multiple_changes(graph, agent_id, changes):
+
+    if agent_id not in graph.nodes:
+        raise ValueError(f"Unknown agent: {agent_id}")
+
+    if graph.nodes[agent_id]["type"] != "agent":
+        raise ValueError("Start node must be an agent")
+
+    # Create a separate graph for the simulation
+    modified = graph.clone()
+
+    # Apply each proposed permission change
+    for change in changes:
+
+        source = change["source"]
+        target = change["target"]
+        action = change["action"]
+        operation = change["operation"]
+
+        if operation == "add":
+            modified.add_edge(source, target, action)
+
+        elif operation == "remove":
+            modified.remove_permission(source, target, action)
+
+        else:
+            raise ValueError(f"Invalid operation: {operation}")
+
+    results = {"changes": changes,"new_access": [],"lost_access": []}
+
+    # Compare resource access before and after all changes
+    for action in ["read", "write"]:
+        before = set(reachable_resources(graph, agent_id, action))
+        after = set(reachable_resources(modified, agent_id, action))
+
+        # Find newly accessible resources
+        for resource in sorted(after - before):
+
+            results["new_access"].append({
+                "resource": resource,
+                "action": action,
+                "sensitivity": modified.nodes[resource]["sensitivity"],
+                "path": find_access_path(modified, agent_id, resource, action)
+            })
+
+        # Find resources that lost access
+        for resource in sorted(before - after):
+
+            results["lost_access"].append({
+                "resource": resource,
+                "action": action,
+                "sensitivity": graph.nodes[resource]["sensitivity"],
+                "path": find_access_path(graph, agent_id, resource, action)
             })
 
     return results
