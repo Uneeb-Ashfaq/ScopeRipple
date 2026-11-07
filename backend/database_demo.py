@@ -6,7 +6,7 @@ def main():
     result = check_connection()
 
     if result == 1:
-        print("Supabase connection successful!")
+        print("SQLite connection successful!")
 
 
 if __name__ == "__main__":

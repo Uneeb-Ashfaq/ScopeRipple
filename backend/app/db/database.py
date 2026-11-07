@@ -1,28 +1,29 @@
-import os
+
 from pathlib import Path
 
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker
 
 
-# Load the environment variables
-project_root = Path(__file__).resolve().parents[3]
-load_dotenv(project_root / ".env")
+# Set the location for our SQLite database
+backend_folder = Path(__file__).resolve().parents[2]
+database_path = backend_folder / "scoperipple.db"
 
-database_url = os.getenv("DATABASE_URL")
+database_url = f"sqlite:///{database_path}"
 
-if not database_url:
-    raise ValueError("DATABASE_URL is missing")
+# Create the SQLite database engine
+engine = create_engine(database_url)
 
-# Connect SQLAlchemy to Supabase PostgreSQL
-engine = create_engine(
-    database_url,
-    connect_args={"sslmode": "require"},
-    pool_pre_ping=True
-)
 
-# Create database sessions
+# Enable foreign key validation
+@event.listens_for(engine, "connect")
+def enable_foreign_keys(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
+
+# Create sessions for database operations
 SessionLocal = sessionmaker(bind=engine)
 
 
@@ -32,7 +33,7 @@ def get_db():
         yield db
 
 
-# Test the database connection
+# Verify the database connection
 def check_connection():
     with engine.connect() as connection:
         result = connection.execute(text("SELECT 1"))

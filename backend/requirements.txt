@@ -39,15 +39,12 @@ opentelemetry-semantic-conventions==0.66b1
 packaging==26.3
 pluggy==1.7.0
 protobuf==7.36.2
-psycopg==3.3.8
-psycopg-binary==3.3.8
 pydantic==2.14.1
 pydantic-extra-types==2.11.1
 pydantic-settings==2.16.1
 pydantic_core==2.50.1
 Pygments==2.21.0
 pytest==9.2.0
-python-dotenv==1.2.4
 python-multipart==0.0.32
 PyYAML==6.0.3
 requests==2.34.2
