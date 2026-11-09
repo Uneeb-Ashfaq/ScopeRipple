@@ -9,6 +9,10 @@ from app.main import app
 from app.db.database import get_db
 from app.db.models import Base
 
+from app.db.models import Node, Permission
+
+
+
 
 # Create a temporary database for each test
 @pytest.fixture
@@ -101,3 +105,85 @@ def test_invalid_project_name(client):
     )
 
     assert response.status_code == 422
+
+
+
+
+
+# Check that a node can be saved to a project
+def test_create_node(client):
+    client.post(
+        "/api/v1/projects",
+        json={"name": "Test Project"}
+    )
+
+    response = client.post(
+        "/api/v1/projects/1/nodes",
+        json={
+            "node_id": "agent",
+            "node_type": "agent"
+        }
+    )
+
+    assert response.status_code == 201
+    assert response.json()["node_id"] == "agent"
+
+
+# Check that duplicate nodes are rejected
+def test_duplicate_node_api(client):
+    client.post(
+        "/api/v1/projects",
+        json={"name": "Test Project"}
+    )
+
+    node = {
+        "node_id": "agent",
+        "node_type": "agent"
+    }
+
+    client.post("/api/v1/projects/1/nodes", json=node)
+
+    response = client.post(
+        "/api/v1/projects/1/nodes",
+        json=node
+    )
+
+    assert response.status_code == 409
+
+
+# Check that saved nodes and permissions form a graph
+def test_saved_graph(client):
+    client.post(
+        "/api/v1/projects",
+        json={"name": "Test Project"}
+    )
+
+    for node_id, node_type in [
+        ("agent", "agent"),
+        ("tool", "tool"),
+        ("resource", "resource")
+    ]:
+        client.post(
+            "/api/v1/projects/1/nodes",
+            json={
+                "node_id": node_id,
+                "node_type": node_type
+            }
+        )
+
+    response = client.post(
+        "/api/v1/projects/1/permissions",
+        json={
+            "source": "agent",
+            "target": "tool",
+            "action": "execute"
+        }
+    )
+
+    assert response.status_code == 201
+
+    response = client.get("/api/v1/projects/1/graph")
+
+    assert response.status_code == 200
+    assert len(response.json()["nodes"]) == 3
+    assert len(response.json()["permissions"]) == 1

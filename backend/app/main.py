@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from app.api.simulations import router as simulation_router
 from app.api.projects import router as project_router
 
+from app.api.graph import router as graph_router
+
 
 # Create the FastAPI application
 app = FastAPI(
@@ -27,7 +29,12 @@ app.include_router(
     prefix="/api/v1",
     tags=["Projects"]
 )
-
+# Register endpoints for saving graph nodes and permissions
+app.include_router(
+    graph_router,
+    prefix="/api/v1",
+    tags=["Graph"]
+)
 
 # Return basic application information
 @app.get("/")
@@ -42,3 +49,4 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
