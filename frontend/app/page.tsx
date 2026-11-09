@@ -2,8 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PermissionGraph from "./PermissionGraph";
-
+import GraphEditor from "./GraphEditor";
 type Project = {
   id: number;
   name: string;
@@ -217,8 +216,10 @@ export default function Home() {
               </button>
             </div>
 
-            <PermissionGraph projectId={selectedProject} />
-
+            <GraphEditor
+              key={selectedProject}
+              projectId={selectedProject}
+            />
             {/* Graph Legend */}
             <div className="mt-5 flex flex-wrap gap-5 text-sm text-slate-600">
               <div className="flex items-center gap-2">
