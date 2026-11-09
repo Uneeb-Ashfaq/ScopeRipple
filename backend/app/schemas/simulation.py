@@ -28,3 +28,9 @@ class SimulationRequest(BaseModel):
     nodes: list[NodeInput] = Field(min_length=1)
     permissions: list[PermissionInput]
     changes: list[ChangeInput]
+
+
+# Define a simulation request using a saved project
+class SavedSimulationRequest(BaseModel):
+    agent_id: str
+    changes: list[ChangeInput]
