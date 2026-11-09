@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 
 from app.api.simulations import router as simulation_router
+from app.api.projects import router as project_router
 
 
 # Create the FastAPI application
@@ -20,6 +21,14 @@ app.include_router(
 )
 
 
+# Register project endpoints
+app.include_router(
+    project_router,
+    prefix="/api/v1",
+    tags=["Projects"]
+)
+
+
 # Return basic application information
 @app.get("/")
 def root():
@@ -29,7 +38,7 @@ def root():
     }
 
 
-# Check whether the API is running
+# Check whether the backend is running
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
