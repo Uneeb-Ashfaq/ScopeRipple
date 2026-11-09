@@ -2,6 +2,7 @@
 __pycache__/
 .pytest_cache/
 .env
+.env_local
 node_modules/
 .next/
 

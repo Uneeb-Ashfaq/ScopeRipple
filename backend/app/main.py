@@ -1,5 +1,6 @@
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.simulations import router as simulation_router
 from app.api.projects import router as project_router
@@ -14,6 +15,14 @@ app = FastAPI(
     version="0.1.0"
 )
 
+# Allow the local frontend to communicate with FastAPI
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 # Register simulation endpoints
 app.include_router(
