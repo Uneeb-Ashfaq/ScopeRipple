@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import PermissionGraph from "./PermissionGraph";
+import SimulationPanel from "./SimulationPanel";
 
 type NodeType = "agent" | "tool" | "resource";
 type Action = "read" | "write" | "execute";
@@ -359,6 +360,11 @@ export default function GraphEditor({ projectId }: Props) {
         <PermissionGraph
           key={`${projectId}-${refreshKey}`}
           projectId={projectId}
+        />
+        {/* Run security simulations against the saved graph */}
+        <SimulationPanel
+        projectId={projectId}
+        refreshKey={refreshKey}
         />
       </div>
     </div>
